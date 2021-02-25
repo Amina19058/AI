@@ -1,0 +1,134 @@
+actor(1, 1).
+
+generate_home_position(X, Y) :-
+    random(2, 9, X),
+    random(2, 9, Y).
+
+home(4, 4).
+covid(2, 3).
+doctor(5, 1).
+mask(6, 3).
+
+is_covid(X, Y) :-
+    covid(X, Y).
+
+is_doctor(X, Y) :-
+    doctor(X, Y).
+
+is_mask(X, Y) :-
+    mask(X, Y).
+
+is_home(X, Y) :-
+    home(X, Y).
+
+is_infected(X, Y) :-
+      covid(X1, Y1),
+      X0 is X1 - 1, X2 is X1 + 1,
+      Y0 is Y1 - 1, Y2 is Y1 + 1,
+      between(X0, X2, X),
+      between(Y0, Y2, Y).
+
+move_up(X, Y, New_X, New_Y) :- New_X is X, New_Y is Y + 1.
+move_down(X, Y, New_X, New_Y) :- New_X is X, New_Y is Y - 1.
+move_left(X, Y, New_X, New_Y) :- New_X is X - 1, New_Y is Y.
+move_right(X, Y, New_X, New_Y) :- New_X is X + 1, New_Y is Y.
+move_up_right(X, Y, New_X, New_Y) :- New_X is X + 1, New_Y is Y + 1.
+move_down_right(X, Y, New_X, New_Y) :- New_X is X + 1, New_Y is Y - 1.
+move_up_left(X, Y, New_X, New_Y) :- New_X is X - 1, New_Y is Y + 1.
+move_down_left(X, Y, New_X, New_Y) :- New_X is X - 1, New_Y is Y - 1.
+
+valid_move(X, Y) :- 
+ between(1, 4, X),
+ between(1, 4, Y).
+
+i_am_at(X, Y) :-
+    write('('), write(X), write(','), write(Y), writeln(')').
+   
+recursive_walk(X, Y, Visited, Protected) :-
+       (   
+       home(X, Y) ->  write("Lovely home: "), i_am_at(X, Y), 
+       write("my path:"), writeln(Visited), false
+       );
+      
+      (   
+    
+        (
+        move_up(X, Y, New_X, New_Y), valid_move(New_X, New_Y), 
+        not(member((New_X;New_Y), Visited)), 
+        not(is_infected(New_X, New_Y)) ->  
+        %i_am_at(New_X, New_Y), 
+        append(Visited, [(New_X;New_Y)], Visited1), 
+        recursive_walk(New_X, New_Y, Visited1) 
+        ; false
+        );
+
+        (   
+        move_up_right(X, Y, New_X, New_Y), valid_move(New_X, New_Y),
+        not(member((New_X;New_Y), Visited)), 
+        not(is_infected(New_X, New_Y)) ->  
+        %i_am_at(New_X, New_Y), 
+        append(Visited, [(New_X;New_Y)], Visited1), 
+        recursive_walk(New_X, New_Y, Visited1)
+        ; false
+        );
+
+        (   
+        move_up_left(X, Y, New_X, New_Y), valid_move(New_X, New_Y),
+        not(member((New_X;New_Y), Visited)), 
+        not(is_infected(New_X, New_Y)) ->  
+        %i_am_at(New_X, New_Y), 
+        append(Visited, [(New_X;New_Y)], Visited1), 
+        recursive_walk(New_X, New_Y, Visited1)
+        ; false
+        );
+
+        (   
+        move_down(X, Y, New_X, New_Y), valid_move(New_X, New_Y),
+        not(member((New_X;New_Y), Visited)), 
+        not(is_infected(New_X, New_Y)) ->  
+        %i_am_at(New_X, New_Y), 
+        append(Visited, [(New_X;New_Y)], Visited1), 
+        recursive_walk(New_X, New_Y, Visited1)
+        ; false
+        );
+
+        (   
+        move_down_right(X, Y, New_X, New_Y), valid_move(New_X, New_Y),
+        not(member((New_X;New_Y), Visited)), 
+        not(is_infected(New_X, New_Y)) ->  
+        %i_am_at(New_X, New_Y), 
+        append(Visited, [(New_X;New_Y)], Visited1), 
+        recursive_walk(New_X, New_Y, Visited1)
+        ; false
+        );
+
+        (   
+        move_down_left(X, Y, New_X, New_Y), valid_move(New_X, New_Y),
+        not(member((New_X;New_Y), Visited)),
+        not(is_infected(New_X, New_Y)) -> 
+        %i_am_at(New_X, New_Y), 
+        append(Visited, [(New_X;New_Y)], Visited1), 
+        recursive_walk(New_X, New_Y, Visited1)
+        ; false
+        );
+
+        (   
+        move_right(X, Y, New_X, New_Y), valid_move(New_X, New_Y),
+        not(member((New_X;New_Y), Visited)), 
+        not(is_infected(New_X, New_Y)) ->  
+        %i_am_at(New_X, New_Y), 
+        append(Visited, [(New_X;New_Y)], Visited1), 
+        recursive_walk(New_X, New_Y, Visited1)
+        ; false
+        );
+
+        (   
+        move_left(X, Y, New_X, New_Y), valid_move(New_X, New_Y),
+        not(member((New_X;New_Y), Visited)), 
+        not(is_infected(New_X, New_Y)) ->  
+        %i_am_at(New_X, New_Y), 
+        append(Visited, [(New_X;New_Y)], Visited1), 
+        recursive_walk(New_X, New_Y, Visited1)
+        ; false
+        )
+      ).
